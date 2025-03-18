@@ -1,27 +1,22 @@
-// Modules
-const express = require("express")
-const jwt = require("jsonwebtoken")
-const env = require("dotenv")
-const {z}  =  require("zod")
-const bcrypt = require("bcrypt")
+const express = require("express");
+const env = require("dotenv");
+const mongoose = require("mongoose");
 
-// In build Module
-const userRouter = require("./routes/user.routes")
-const adminRouter = require("./routes/admin.routes")
-const db = require("./db/connect")
+// Connect to MongoDB
+mongoose.connect("mongodb+srv://rahul8159977131:uFjfLfKUOZr12VOw@cluster0.sxla1.mongodb.net/todo-rahul-3");
 
+const userRouter = require("./routes/user.routes");
+const adminRouter = require("./routes/admin.routes");
 
-const app = express()
-app.use(express.json())
-env.config()
+const app = express();
+app.use(express.json());
+env.config();
 
-
+// Routes
+app.use("/user", userRouter);
 
 
-
-app.use("/user",userRouter)
-app.use("/admin",userRouter)
-
-app.listen(3000,()=>{
-    console.log("🚀 Server is running on port 3000");
-})
+// Start Server
+app.listen(4000, () => {
+  console.log("🚀 Server is running on port 4000");
+});
