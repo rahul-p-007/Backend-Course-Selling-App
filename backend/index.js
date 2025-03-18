@@ -7,6 +7,7 @@ mongoose.connect("mongodb+srv://rahul8159977131:uFjfLfKUOZr12VOw@cluster0.sxla1.
 
 const userRouter = require("./routes/user.routes");
 const adminRouter = require("./routes/admin.routes");
+const courseRouter = require("./routes/course.routes")
 
 const app = express();
 app.use(express.json());
@@ -14,6 +15,8 @@ env.config();
 
 // Routes
 app.use("/user", userRouter);
+app.use("/course",courseRouter)
+app.use("/admin",adminRouter)
 
 
 // Start Server

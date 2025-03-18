@@ -14,16 +14,7 @@ UserRouter.post("/login", (req,res)=>{
     })
 });
 
-UserRouter.post("/course/purchase", (req,res)=>{
-    res.json({
-        message: "Course Purchases"
-    })
-});
-UserRouter.get("/courses", (req,res)=>{
-    res.json({
-        message: " courses"
-    })
-});
+
 UserRouter.get("/purchases", (req,res)=>{
     res.json({
         message: "All Purchases"
