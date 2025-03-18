@@ -12,3 +12,5 @@ CourseRouter.get("/", (req,res)=>{
         message: " courses"
     })
 });
+
+module.exports = CourseRouter;

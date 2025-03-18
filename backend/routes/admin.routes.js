@@ -1,7 +1,8 @@
-const {Router} = require("express")
+const express = require("express")
 
-const adminRouter = Router()
 
+const adminRouter = express.Router()
+const {UserModel}  = require("../db/Schema/Schema")
 adminRouter.post("/login",(req,res)=>{
     res.json({
         message : "You Login"
@@ -30,6 +31,4 @@ adminRouter.get("/course/bulk",(req,res)=>{
     })
 })
 
-module.exports = {
-    adminRouter
-}
+module.exports = adminRouter;
