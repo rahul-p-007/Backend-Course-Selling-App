@@ -11,6 +11,7 @@ const JWT_SECRET = process.env.JWT_SECRET_ADMIN
 const adminRouter = express.Router()
 const { AdminModel, CourseModel}  = require("../db/Schema/Schema");
 const { adminAuthMiddleware } = require("../middleware/admin.auth");
+const { adminMiddleware } = require("../middleware/user.auth");
 
 
 
@@ -123,7 +124,8 @@ adminRouter.put("/course",adminAuthMiddleware, async(req,res)=>{
     const {title,description,imageUrl,price, courseId} = req.body
     
   const course =   await CourseModel.updateOne({
-    _id : courseId
+    _id : courseId,
+    creatorId : adminId
   },{
      title,description,imageUrl,price
     })
@@ -132,9 +134,16 @@ adminRouter.put("/course",adminAuthMiddleware, async(req,res)=>{
      courseId : course._id
     })
 })
-adminRouter.get("/course/bulk",(req,res)=>{
-    res.json({
-        message : "You Login"
+adminRouter.get("/course/bulk",adminMiddleware,async (req,res)=>{
+    const adminId = req.userId;
+ 
+    
+  const course =   await CourseModel.find({
+    creatorId : adminId
+  })
+   return res.json({
+     message :"Course updated",
+     course
     })
 })
 
