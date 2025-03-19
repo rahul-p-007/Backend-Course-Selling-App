@@ -1,14 +1,16 @@
 const express = require("express")
 const {z} = require("zod");
+require("dotenv").config();
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
+const JWT_SECRET = process.env.JWT_SECRET_ADMIN
 
 
-const JWT_SECRET= "123Happy123"
 
 const adminRouter = express.Router()
-const { AdminModel}  = require("../db/Schema/Schema")
+const { AdminModel, CourseModel}  = require("../db/Schema/Schema");
+const { adminAuthMiddleware } = require("../middleware/admin.auth");
 
 
 
@@ -104,14 +106,30 @@ adminRouter.post("/login",async(req,res)=>{
 
 
 
-adminRouter.post("/course",(req,res)=>{
-    res.json({
-        message : "You Create Course"
-    })
+adminRouter.post("/course",adminAuthMiddleware, async (req,res)=>{
+   const adminId = req.userId;
+   const {title,description,imageUrl,price} = req.body
+    // creating a web3 saas in 6 hours that explain how to put image url directly
+ const course =   await CourseModel.create({
+    title,description,imageUrl,price,creatorId : adminId
+   })
+  return res.json({
+    message :"Course created",
+    courseId : course._id
+   })
 })
-adminRouter.put("/course",(req,res)=>{
-    res.json({
-        message : "Admin delete the course"
+adminRouter.put("/course",adminAuthMiddleware, async(req,res)=>{
+    const adminId = req.userId;
+    const {title,description,imageUrl,price, courseId} = req.body
+    
+  const course =   await CourseModel.updateOne({
+    _id : courseId
+  },{
+     title,description,imageUrl,price
+    })
+   return res.json({
+     message :"Course updated",
+     courseId : course._id
     })
 })
 adminRouter.get("/course/bulk",(req,res)=>{
