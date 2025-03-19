@@ -1,6 +1,11 @@
 const express = require("express");
 const {z} = require("zod");
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
+
+
+
+const JWT_SECRET= "123Happy"
 
 const { UserModel } = require("../db/Schema/Schema");
 const UserRouter = express.Router();
@@ -57,10 +62,42 @@ UserRouter.post("/signup", async (req,res)=>{
 
    
 });
-UserRouter.post("/login", (req,res)=>{
-    res.json({
-        message: "login Routes"
+UserRouter.post("/login", async(req,res)=>{
+try {
+    const {email,password} = req.body
+
+    const user = await UserModel.findOne({
+        email : email,
     })
+    if(!user){
+      return  res.status(403).json({
+            message : "User does not exist"
+        })
+    }
+
+    const passwordMatch = await bcrypt.compare(password,user.password)
+
+    if(passwordMatch){
+        const token = jwt.sign({
+            id : user._id
+        },JWT_SECRET)
+       return res.json({
+            token : token
+        })
+    }else{
+        res.status(403).json({
+            message : "Incorrect credentails"
+        })
+    }
+} catch (error) {
+    console.error(error);
+    res.status(500).json({
+        message: "Internal Server Error"
+    });
+}
+
+    
+  
 });
 
 
