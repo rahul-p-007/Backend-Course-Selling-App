@@ -7,7 +7,8 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 
 
-const { UserModel } = require("../db/Schema/Schema");
+const { UserModel, PurchaseModel, CourseModel } = require("../db/Schema/Schema");
+const userMiddleware = require("../middleware/user.auth")
 const UserRouter = express.Router();
 
 // User Routes
@@ -101,11 +102,34 @@ try {
 });
 
 
-UserRouter.get("/purchases", (req,res)=>{
-    res.json({
-        message: "All Purchases"
-    })
+
+
+
+
+UserRouter.get("/purchases", userMiddleware, async function (req, res) {
+    try {
+        const userId = req.userId;
+
+        // Find purchases by userId
+        const purchases = await PurchaseModel.find({ userId });
+
+        if (!purchases.length) {
+            return res.status(404).json({ message: "No purchases found" });
+        }
+
+        // Extract all course IDs from purchases
+        const courseIds = purchases.map(purchase => purchase.courseId);
+
+        // Find course details for those course IDs
+        const coursesData = await CourseModel.find({ _id: { $in: courseIds } });
+
+        res.json({
+            purchases,
+            courses: coursesData
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 });
-
-
 module.exports = UserRouter;
